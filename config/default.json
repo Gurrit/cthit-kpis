@@ -1,0 +1,3 @@
+{
+  "oauthBaseUrl": process.env.OAUTH_BASE_URL || "localhost:8081/api/login"
+}

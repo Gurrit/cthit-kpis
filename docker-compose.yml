@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  kpi:
+    build:
+      context: ./
+      dockerfile: dev.Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+    - ./src:/usr/src/app/src
+    - ./config:/usr/src/app/config
+    - ./node_modules:/usr/src/app/node_modules
