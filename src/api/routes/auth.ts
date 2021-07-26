@@ -1,23 +1,30 @@
 import {Request, Response} from "express";
-var express = require('express');
-var loginService = require("../services/loginService");
-var router = express.Router();
+import {Token} from "client-oauth2";
+let express = require('express');
+let router = express.Router();
+const Gamma = require("../../config/oauthConfig")
+const session = require("express-session");
 /*
  * This file handles oauth2 paths needed to login through gamma
  */
 router.get('/', (req:Request, res:Response) => {
-    const clientId : string = process.env.OAUTH_CLIENT || "noID";
-    const redirectUrl : string = process.env.OAUTH_REDIRECT_URI || "http://localhost:8080/";
-    const baseUrl : string = process.env.OAUTH_EXTERNAL_HOST || "http://localhost:8081/api";
-    return res.redirect(
-        `${baseUrl}/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUrl}`);
+    const uri = Gamma.gammaAuth.code.getUri();
+    return res.redirect(uri);
 });
 
-router.get('/callback', function(req: Request, res: Response) {
-    const code : any = req.query.code; // TODO Fix
-    let user = loginService.authenticateUser(code)
-    return res.redirect("/");
-    //return res.write(code);
-})
+router.get('/callback', async function (req:any, res:any) {
+    console.log(req.session)
+    Gamma.gammaAuth.code.getToken(req.originalUrl)
+        .then((user:Token) => {
+            req.session.auth = user.accessToken;
+        }).then(() => {
+            res.redirect("/");
+    })
+        .catch(() => {
+            console.log("failed to set access token");
+            res.redirect("/error")
+
+        });
+});
 
 module.exports = router;

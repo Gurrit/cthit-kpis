@@ -17,6 +17,10 @@ services:
     - ./src:/usr/src/app/src
     - ./config:/usr/src/app/config
     - ./node_modules:/usr/src/app/node_modules
+  redis:
+    image: redis:5.0
+    networks:
+      - default
   gamma-frontend:
     image: cthit/gamma-frontend:development
     environment:
@@ -51,8 +55,6 @@ services:
       SUCCESSFUL_LOGIN: http://localhost:3000
       CORS_ALLOWED_ORIGIN: http://localhost:3000
       BACKEND_URI: http://localhost:8081/api/
-      ROOT_DEBUG_LEVEL: debug
-      WEB_DEBUG_LEVEL: debug
       PRODUCTION: "false"
       COOKIE_DOMAIN: localhost
       IS_MOCKING_CLIENT: "true"
